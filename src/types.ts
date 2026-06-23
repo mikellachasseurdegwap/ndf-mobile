@@ -1,0 +1,39 @@
+export type User = {
+  id: string
+  nom: string
+  prenom: string
+  email: string
+  role: 'user' | 'admin'
+}
+
+export type AuthSession = {
+  token: string
+  user: User
+}
+
+export type ExpenseReport = {
+  id: string
+  commission: string
+  objet_action: string
+  date_action: string
+  ville_depart: string
+  ville_arrivee: string
+  montant_total: string | number
+  statut: 'draft' | 'submitted' | 'approved' | 'rejected' | 'paid'
+  created_at: string
+}
+
+export type MobileExpensePayload = {
+  commission: string
+  objet_action: string
+  date_action: string
+  ville_depart: string
+  ville_arrivee: string
+  expenses: Array<{
+    categorie: 'voiture' | 'moto' | 'train' | 'bus' | 'avion' | 'hotel' | 'repas' | 'autre'
+    description: string
+    montant: number
+    date_depense: string
+    km?: number
+  }>
+}

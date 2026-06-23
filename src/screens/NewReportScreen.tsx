@@ -119,10 +119,6 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
   const [departementDepart, setDepartementDepart] = useState('')
   const [villeArrivee, setVilleArrivee] = useState('')
   const [departementArrivee, setDepartementArrivee] = useState('')
-  const [immatriculation, setImmatriculation] = useState('')
-  const [puissanceVoiture, setPuissanceVoiture] = useState('')
-  const [puissanceMoto, setPuissanceMoto] = useState('')
-  const [vehiculeElectrique, setVehiculeElectrique] = useState(false)
   const [expenses, setExpenses] = useState<ExpenseDraft[]>([emptyExpense()])
   const [loading, setLoading] = useState(false)
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null)
@@ -266,53 +262,38 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       {step === 0 && (
-        <>
-          <View style={styles.card}>
-            <SectionTitle>Informations générales</SectionTitle>
-            {!token && (
-              <>
-                <View style={styles.row}>
-                  <TextInput placeholder="Prénom" value={prenom} onChangeText={setPrenom} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-                  <TextInput placeholder="Nom" value={nom} onChangeText={setNom} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-                </View>
-                <TextInput placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholderTextColor={colors.mutedText} style={styles.input} />
-              </>
-            )}
-            <TextInput placeholder="Adresse" value={adresse} onChangeText={setAdresse} placeholderTextColor={colors.mutedText} style={styles.input} />
-            <TextInput placeholder="Téléphone" value={telephone} onChangeText={setTelephone} keyboardType="phone-pad" placeholderTextColor={colors.mutedText} style={styles.input} />
-            <Text style={styles.fieldLabel}>Commission</Text>
-            <View style={styles.chips}>
-              {commissions.map((item) => (
-                <TouchableOpacity key={item} style={[styles.chip, commission === item && styles.chipActive]} onPress={() => setCommission(item)}>
-                  <Text style={[styles.chipText, commission === item && styles.chipTextActive]}>{item}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TextInput placeholder="Objet de l'action" value={objetAction} onChangeText={setObjetAction} placeholderTextColor={colors.mutedText} style={styles.input} />
-            <DateButton label="Date de l'action" value={dateAction} onPress={() => setDatePickerTarget('date_action')} />
-            <View style={styles.row}>
-              <TextInput placeholder="Ville départ" value={villeDepart} onChangeText={setVilleDepart} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-              <TextInput placeholder="Département" value={departementDepart} onChangeText={setDepartementDepart} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-            </View>
-            <View style={styles.row}>
-              <TextInput placeholder="Ville arrivée" value={villeArrivee} onChangeText={setVilleArrivee} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-              <TextInput placeholder="Département" value={departementArrivee} onChangeText={setDepartementArrivee} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-            </View>
+        <View style={styles.card}>
+          <SectionTitle>Informations générales</SectionTitle>
+          {!token && (
+            <>
+              <View style={styles.row}>
+                <TextInput placeholder="Prénom" value={prenom} onChangeText={setPrenom} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
+                <TextInput placeholder="Nom" value={nom} onChangeText={setNom} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
+              </View>
+              <TextInput placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholderTextColor={colors.mutedText} style={styles.input} />
+            </>
+          )}
+          <TextInput placeholder="Adresse" value={adresse} onChangeText={setAdresse} placeholderTextColor={colors.mutedText} style={styles.input} />
+          <TextInput placeholder="Téléphone" value={telephone} onChangeText={setTelephone} keyboardType="phone-pad" placeholderTextColor={colors.mutedText} style={styles.input} />
+          <Text style={styles.fieldLabel}>Commission</Text>
+          <View style={styles.chips}>
+            {commissions.map((item) => (
+              <TouchableOpacity key={item} style={[styles.chip, commission === item && styles.chipActive]} onPress={() => setCommission(item)}>
+                <Text style={[styles.chipText, commission === item && styles.chipTextActive]}>{item}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-
-          <View style={styles.card}>
-            <SectionTitle>Véhicule</SectionTitle>
-            <TextInput placeholder="Immatriculation" value={immatriculation} onChangeText={setImmatriculation} autoCapitalize="characters" placeholderTextColor={colors.mutedText} style={styles.input} />
-            <View style={styles.row}>
-              <TextInput placeholder="Puissance voiture" value={puissanceVoiture} onChangeText={setPuissanceVoiture} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-              <TextInput placeholder="Puissance moto" value={puissanceMoto} onChangeText={setPuissanceMoto} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
-            </View>
-            <TouchableOpacity style={styles.checkRow} onPress={() => setVehiculeElectrique((value) => !value)}>
-              <Ionicons name={vehiculeElectrique ? 'checkbox' : 'square-outline'} size={22} color={colors.green} />
-              <Text style={styles.checkText}>Véhicule électrique</Text>
-            </TouchableOpacity>
+          <TextInput placeholder="Objet de l'action" value={objetAction} onChangeText={setObjetAction} placeholderTextColor={colors.mutedText} style={styles.input} />
+          <DateButton label="Date de l'action" value={dateAction} onPress={() => setDatePickerTarget('date_action')} />
+          <View style={styles.row}>
+            <TextInput placeholder="Ville départ" value={villeDepart} onChangeText={setVilleDepart} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
+            <TextInput placeholder="Département" value={departementDepart} onChangeText={setDepartementDepart} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
           </View>
-        </>
+          <View style={styles.row}>
+            <TextInput placeholder="Ville arrivée" value={villeArrivee} onChangeText={setVilleArrivee} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
+            <TextInput placeholder="Département" value={departementArrivee} onChangeText={setDepartementArrivee} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
+          </View>
+        </View>
       )}
 
       {step === 1 && (
@@ -429,7 +410,7 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
         <DateTimePicker
           value={new Date(datePickerTarget === 'date_action' ? dateAction : expenses[Number(datePickerTarget.replace('depense-', ''))].date_depense)}
           mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          display={Platform.OS === 'ios' ? 'inline' : 'calendar'}
           onChange={handleDateChange}
         />
       )}

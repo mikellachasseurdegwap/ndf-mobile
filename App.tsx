@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { AdminScreen } from './src/screens/AdminScreen'
 import { AuthScreen } from './src/screens/AuthScreen'
 import { ConfirmationScreen } from './src/screens/ConfirmationScreen'
 import { DashboardScreen } from './src/screens/DashboardScreen'
@@ -10,12 +11,13 @@ import { ReportsScreen } from './src/screens/ReportsScreen'
 import { colors, radius, spacing } from './src/theme/theme'
 import { AuthSession, ExpenseReport } from './src/types'
 
-type TabKey = 'dashboard' | 'new' | 'reports' | 'profile' | 'confirmation'
+type TabKey = 'dashboard' | 'new' | 'reports' | 'admin' | 'profile' | 'confirmation'
 
 const tabs: Array<{ key: TabKey; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
   { key: 'dashboard', label: 'Accueil', icon: 'home-outline' },
   { key: 'new', label: 'NDF', icon: 'add-circle-outline' },
   { key: 'reports', label: 'Suivi', icon: 'receipt-outline' },
+  { key: 'admin', label: 'Admin', icon: 'shield-checkmark-outline' },
   { key: 'profile', label: 'Profil', icon: 'person-outline' },
 ]
 
@@ -81,6 +83,12 @@ export default function App() {
       return <ReportsScreen token={session.token} />
     }
 
+    if (activeTab === 'admin') {
+      if (!session) return <AuthScreen onAuthenticated={handleAuthenticated} />
+      if (session.user.role !== 'admin') return <DashboardScreen user={session.user} onNewReportPress={() => setActiveTab('new')} onReportsPress={() => setActiveTab('reports')} />
+      return <AdminScreen token={session.token} />
+    }
+
     if (!session) return <AuthScreen onAuthenticated={handleAuthenticated} />
     return <ProfileScreen user={session.user} onLogout={() => setSession(null)} />
   }
@@ -101,6 +109,7 @@ export default function App() {
       <View style={styles.tabBar}>
         {tabs.map((tab) => {
           if (!session && tab.key === 'reports') return null
+          if (tab.key === 'admin' && session?.user.role !== 'admin') return null
             const isActive = activeTab === tab.key
             return (
               <TouchableOpacity key={tab.key} style={[styles.tabItem, isActive && styles.tabItemActive]} onPress={() => setActiveTab(tab.key)} activeOpacity={0.85}>

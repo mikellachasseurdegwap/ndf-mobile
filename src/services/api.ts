@@ -51,6 +51,28 @@ export function listReports(token: string) {
   })
 }
 
+export function listAdminReports(token: string, statut = 'all') {
+  const query = statut === 'all' ? '' : `?statut=${encodeURIComponent(statut)}`
+  return request<ExpenseReport[]>(`/api/mobile/admin/expenses${query}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export function updateAdminReport(
+  token: string,
+  reportId: string,
+  input: {
+    action: 'approve' | 'reject' | 'paid'
+    commentaire?: string
+  }
+) {
+  return request<{ statut: ExpenseReport['statut'] }>(`/api/mobile/admin/expenses/${reportId}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(input),
+  })
+}
+
 export function createReport(token: string | null, input: MobileExpensePayload) {
   return request<ExpenseReport>('/api/mobile/expenses', {
     method: 'POST',

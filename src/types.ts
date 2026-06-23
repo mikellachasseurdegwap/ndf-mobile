@@ -21,7 +21,10 @@ export type ExpenseReport = {
   montant_total: string | number
   statut: 'draft' | 'submitted' | 'approved' | 'rejected' | 'paid'
   created_at: string
+  submitted_at?: string | null
+  commentaire?: string | null
   commentaire_tresorier?: string | null
+  user?: Pick<User, 'id' | 'nom' | 'prenom' | 'email'> | null
   expenses?: Array<{
     id: string
     categorie: string

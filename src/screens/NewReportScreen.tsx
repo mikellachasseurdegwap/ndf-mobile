@@ -154,11 +154,12 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
       setError(message)
       return
     }
+    setDatePickerTarget(null)
     setStep((value) => Math.min(value + 1, steps.length - 1))
   }
 
   function handleDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
-    if (Platform.OS !== 'ios') setDatePickerTarget(null)
+    setDatePickerTarget(null)
     if (event.type === 'dismissed' || !selectedDate || !datePickerTarget) return
 
     const value = toDateInputValue(selectedDate)
@@ -417,7 +418,10 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
 
       <View style={styles.actions}>
         {step > 0 && (
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => setStep((value) => value - 1)}>
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => {
+            setDatePickerTarget(null)
+            setStep((value) => value - 1)
+          }}>
             <Text style={styles.secondaryText}>Retour</Text>
           </TouchableOpacity>
         )}

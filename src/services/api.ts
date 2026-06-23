@@ -17,9 +17,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     },
   })
 
-  const payload = await response.json() as ApiResponse<T>
-  if (!payload.success || !payload.data) {
-    throw new Error(payload.error || 'Erreur API')
+  let payload: ApiResponse<T> | null = null
+  try {
+    payload = await response.json() as ApiResponse<T>
+  } catch {
+    throw new Error(response.ok ? 'Réponse serveur invalide' : 'Erreur serveur')
+  }
+
+  if (!response.ok || !payload.success || !payload.data) {
+    throw new Error(payload.error || 'Erreur serveur')
   }
 
   return payload.data
@@ -45,10 +51,37 @@ export function listReports(token: string) {
   })
 }
 
-export function createReport(token: string, input: MobileExpensePayload) {
+export function createReport(token: string | null, input: MobileExpensePayload) {
   return request<ExpenseReport>('/api/mobile/expenses', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: JSON.stringify(input),
   })
+}
+
+export function generatePdf(reportId: string) {
+  return request<{ pdf_url: string }>(`/api/pdf/${reportId}`)
+}
+
+export async function uploadJustificatif(file: { uri: string; name: string; type: string }) {
+  const formData = new FormData()
+  formData.append('file', file as unknown as Blob)
+
+  const response = await fetch(`${API_BASE_URL}/api/upload`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  let payload: ApiResponse<{ url: string }> | null = null
+  try {
+    payload = await response.json() as ApiResponse<{ url: string }>
+  } catch {
+    throw new Error(response.ok ? 'Réponse serveur invalide' : 'Erreur serveur upload')
+  }
+
+  if (!response.ok || !payload.success || !payload.data?.url) {
+    throw new Error(payload.error || 'Erreur serveur upload')
+  }
+
+  return payload.data.url
 }

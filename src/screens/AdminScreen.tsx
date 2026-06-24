@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Linking, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, Linking, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { SectionTitle } from '../components/SectionTitle'
 import { generatePdf, listAdminReports, updateAdminReport } from '../services/api'
@@ -158,7 +158,7 @@ export function AdminScreen({ token }: { token: string }) {
                       <Text style={styles.expenseTitle}>{expense.description}</Text>
                       <Text style={styles.meta}>{expense.categorie} · {formatDate(expense.date_depense)}</Text>
                       <Text style={styles.amountSmall}>{Number(expense.montant_retenu ?? expense.montant).toFixed(2)} €</Text>
-                      <Text style={styles.meta}>Justificatifs : {countJustificatifs(expense.justificatif_url)}</Text>
+                      <Justificatifs value={expense.justificatif_url} />
                     </View>
                   ))}
                 </View>
@@ -214,13 +214,50 @@ function formatDate(value: string) {
 }
 
 function countJustificatifs(value?: string | null) {
-  if (!value) return 0
+  return parseJustificatifs(value).length
+}
+
+function parseJustificatifs(value?: string | null) {
+  if (!value) return []
   try {
     const parsed = JSON.parse(value)
-    return Array.isArray(parsed) ? parsed.length : 1
+    return Array.isArray(parsed) ? parsed.filter((url): url is string => typeof url === 'string' && url.length > 0) : [value]
   } catch {
-    return 1
+    return [value]
   }
+}
+
+function isImageUrl(url: string) {
+  return /\.(jpg|jpeg|png|webp)(\?|#|$)/i.test(url)
+}
+
+function Justificatifs({ value }: { value?: string | null }) {
+  const urls = parseJustificatifs(value)
+
+  if (!urls.length) {
+    return <Text style={styles.meta}>Aucun justificatif joint</Text>
+  }
+
+  return (
+    <View style={styles.justificatifs}>
+      <Text style={styles.meta}>Justificatifs : {urls.length}</Text>
+      {urls.map((url, index) => (
+        <TouchableOpacity key={`${url}-${index}`} style={styles.justificatifCard} onPress={() => Linking.openURL(url)} activeOpacity={0.85}>
+          {isImageUrl(url) ? (
+            <Image source={{ uri: url }} style={styles.justificatifImage} resizeMode="cover" />
+          ) : (
+            <View style={styles.justificatifFile}>
+              <Ionicons name="document-attach-outline" size={24} color={colors.deepGreen} />
+            </View>
+          )}
+          <View style={styles.justificatifInfo}>
+            <Text style={styles.justificatifTitle}>Justificatif {index + 1}</Text>
+            <Text style={styles.justificatifLink}>Ouvrir</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </View>
+  )
 }
 
 function InfoLine({ label, value }: { label: string; value: string }) {
@@ -418,6 +455,47 @@ const styles = StyleSheet.create({
     color: colors.deepGreen,
     fontWeight: '900',
     marginTop: spacing.xs,
+  },
+  justificatifs: {
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  justificatifCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.sm,
+  },
+  justificatifImage: {
+    width: 58,
+    height: 58,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primarySoft,
+  },
+  justificatifFile: {
+    width: 58,
+    height: 58,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  justificatifInfo: {
+    flex: 1,
+  },
+  justificatifTitle: {
+    color: colors.text,
+    fontWeight: '900',
+  },
+  justificatifLink: {
+    color: colors.green,
+    fontSize: 12,
+    fontWeight: '900',
+    marginTop: 3,
   },
   warning: {
     color: colors.warning,

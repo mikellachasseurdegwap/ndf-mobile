@@ -127,7 +127,6 @@ function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () =>
   return (
     <View style={styles.guestHome}>
       <View style={styles.guestHero}>
-        <Text style={styles.guestBadge}>Application FFS / EFS</Text>
         <Text style={styles.guestTitle}>Bienvenue sur la Fédération Française de Spéléologie</Text>
         <Text style={styles.guestSubtitle}>Créer, envoyer et suivre vos notes depuis votre mobile.</Text>
       </View>
@@ -226,18 +225,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.xl,
     alignItems: 'center',
-  },
-  guestBadge: {
-    color: colors.green,
-    fontSize: 11,
-    fontWeight: '800',
-    letterSpacing: 0.7,
-    textTransform: 'uppercase',
-    backgroundColor: colors.primarySoft,
-    borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    overflow: 'hidden',
   },
   guestTitle: {
     color: colors.text,

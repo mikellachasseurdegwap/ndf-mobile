@@ -16,8 +16,8 @@ export type ExpenseReport = {
   commission: string
   objet_action: string
   date_action: string
-  ville_depart: string
-  ville_arrivee: string
+  ville_depart?: string
+  ville_arrivee?: string
   montant_total: string | number
   statut: 'draft' | 'submitted' | 'approved' | 'rejected' | 'paid'
   created_at: string

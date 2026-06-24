@@ -97,7 +97,7 @@ export function ReportsScreen({ token }: { token: string }) {
                   <InfoLine label="Commission" value={report.commission} />
                   <InfoLine label="Objet" value={report.objet_action} />
                   <InfoLine label="Date action" value={new Date(report.date_action).toLocaleDateString('fr-FR')} />
-                  <InfoLine label="Trajet" value={`${report.ville_depart} -> ${report.ville_arrivee}`} />
+                  <InfoLine label="Trajet" value={formatTrajet(report.ville_depart, report.ville_arrivee)} />
                   <InfoLine label="Montant total" value={`${Number(report.montant_total).toFixed(2)} €`} />
                   <InfoLine label="Statut" value={statusLabels[report.statut]} />
                   <View style={styles.separator} />
@@ -131,6 +131,11 @@ function countJustificatifs(value?: string | null) {
   } catch {
     return 1
   }
+}
+
+function formatTrajet(depart?: string, arrivee?: string) {
+  if (!depart && !arrivee) return 'Non renseigné'
+  return `${depart || 'Non renseigné'} -> ${arrivee || 'Non renseigné'}`
 }
 
 function InfoLine({ label, value }: { label: string; value: string }) {

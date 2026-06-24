@@ -102,6 +102,15 @@ function toApiCategory(category: ExpenseCategory): MobileExpensePayload['expense
   return category
 }
 
+function formatLocation(ville: string, departement: string) {
+  const trimmedVille = ville.trim()
+  const trimmedDepartement = departement.trim()
+  if (!trimmedVille && !trimmedDepartement) return ''
+  if (!trimmedDepartement) return trimmedVille
+  if (!trimmedVille) return `Département ${trimmedDepartement}`
+  return `${trimmedVille} (${trimmedDepartement})`
+}
+
 export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
   const [step, setStep] = useState(0)
   const [datePickerTarget, setDatePickerTarget] = useState<DateTarget | null>(null)
@@ -132,7 +141,7 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
     setError('')
     if (currentStep === 0) {
       if (!token && (!nom || !prenom || !email)) return 'Nom, prénom et email sont obligatoires sans compte'
-      if (!adresse || !telephone || !commission || !objetAction || !dateAction || !villeDepart || !villeArrivee || !departementDepart || !departementArrivee) {
+      if (!adresse || !telephone || !commission || !objetAction || !dateAction) {
         return 'Tous les champs des informations générales sont obligatoires'
       }
     }
@@ -218,13 +227,15 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
     setLoading(true)
     setError('')
     try {
+      const locationDepart = formatLocation(villeDepart, departementDepart)
+      const locationArrivee = formatLocation(villeArrivee, departementArrivee)
       const report = await createReport(token, {
         ...(token ? {} : { nom, prenom, email }),
         commission,
         objet_action: objetAction,
         date_action: dateAction,
-        ville_depart: `${villeDepart} (${departementDepart})`,
-        ville_arrivee: `${villeArrivee} (${departementArrivee})`,
+        ville_depart: locationDepart,
+        ville_arrivee: locationArrivee,
         expenses: expenses.map((expense) => ({
           categorie: toApiCategory(expense.categorie),
           description: expense.description,
@@ -277,6 +288,7 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
           <TextInput placeholder="Commission" value={commission} onChangeText={setCommission} placeholderTextColor={colors.mutedText} style={styles.input} />
           <TextInput placeholder="Objet de l'action" value={objetAction} onChangeText={setObjetAction} placeholderTextColor={colors.mutedText} style={styles.input} />
           <DateButton label="Date de l'action" value={dateAction} onPress={() => setDatePickerTarget('date_action')} />
+          <Text style={styles.optionalLabel}>Trajet optionnel</Text>
           <View style={styles.row}>
             <TextInput placeholder="Ville départ" value={villeDepart} onChangeText={setVilleDepart} placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
             <TextInput placeholder="Département" value={departementDepart} onChangeText={setDepartementDepart} keyboardType="numeric" placeholderTextColor={colors.mutedText} style={[styles.input, styles.half]} />
@@ -381,7 +393,11 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
           <SummaryLine label="Commission" value={commission} />
           <SummaryLine label="Objet" value={objetAction} />
           <SummaryLine label="Date action" value={formatDateFr(dateAction)} />
-          <SummaryLine label="Trajet" value={`${villeDepart} (${departementDepart}) → ${villeArrivee} (${departementArrivee})`} />
+          <SummaryLine label="Trajet" value={
+            formatLocation(villeDepart, departementDepart) || formatLocation(villeArrivee, departementArrivee)
+              ? `${formatLocation(villeDepart, departementDepart) || 'Non renseigné'} → ${formatLocation(villeArrivee, departementArrivee) || 'Non renseigné'}`
+              : 'Non renseigné'
+          } />
           <View style={styles.separator} />
           {expenses.map((expense, index) => (
             <View key={index} style={styles.summaryExpense}>
@@ -543,6 +559,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   fieldLabel: {
+    color: colors.green,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    marginBottom: spacing.sm,
+  },
+  optionalLabel: {
     color: colors.green,
     fontSize: 12,
     fontWeight: '900',

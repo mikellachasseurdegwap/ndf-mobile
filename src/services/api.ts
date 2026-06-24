@@ -6,6 +6,7 @@ type ApiResponse<T> = {
   success: boolean
   data?: T
   error?: string
+  message?: string
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -43,6 +44,27 @@ export function register(input: { nom: string; prenom: string; email: string; pa
     method: 'POST',
     body: JSON.stringify(input),
   })
+}
+
+export async function forgotPassword(email: string) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+
+  let payload: ApiResponse<never> | null = null
+  try {
+    payload = await response.json() as ApiResponse<never>
+  } catch {
+    throw new Error(response.ok ? 'Réponse serveur invalide' : 'Erreur serveur')
+  }
+
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.error || 'Erreur serveur')
+  }
+
+  return payload.message || 'Si cet email existe, un lien de réinitialisation a été envoyé.'
 }
 
 export function listReports(token: string) {

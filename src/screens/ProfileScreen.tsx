@@ -1,8 +1,8 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import { PrimaryButton } from '../components/PrimaryButton'
 import { SectionTitle } from '../components/SectionTitle'
-import { colors, radius, spacing } from '../theme/theme'
 import { User } from '../types'
+import { styles } from './ProfileScreen.styles'
 
 type ProfileScreenProps = {
   user: User
@@ -27,42 +27,3 @@ export function ProfileScreen({ user, onLogout }: ProfileScreenProps) {
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  heading: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  copy: {
-    color: colors.mutedText,
-    fontSize: 14,
-    marginTop: spacing.xs,
-    marginBottom: spacing.lg,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  label: {
-    color: colors.green,
-    fontSize: 12,
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    marginTop: spacing.sm,
-  },
-  value: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '800',
-    marginTop: spacing.xs,
-  },
-})

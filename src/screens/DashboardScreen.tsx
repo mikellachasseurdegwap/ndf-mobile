@@ -1,9 +1,10 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { PrimaryButton } from '../components/PrimaryButton'
 import { SectionTitle } from '../components/SectionTitle'
-import { colors, radius, shadow, spacing } from '../theme/theme'
+import { colors } from '../theme/theme'
 import { User } from '../types'
+import { styles } from './DashboardScreen.styles'
 
 type DashboardScreenProps = {
   user: User
@@ -46,71 +47,3 @@ export function DashboardScreen({ user, onNewReportPress, onReportsPress }: Dash
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  hero: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    ...shadow,
-  },
-  eyebrow: {
-    color: colors.green,
-    fontSize: 12,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  heading: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: '900',
-    marginTop: spacing.sm,
-  },
-  copy: {
-    color: colors.mutedText,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: spacing.sm,
-    marginBottom: spacing.lg,
-  },
-  actionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-  },
-  actionIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: radius.md,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionText: {
-    flex: 1,
-  },
-  actionTitle: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  actionCopy: {
-    color: colors.mutedText,
-    fontSize: 13,
-    marginTop: spacing.xs,
-  },
-})

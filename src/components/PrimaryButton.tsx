@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
-import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { colors, radius, spacing } from '../theme/theme'
+import { GestureResponderEvent, Text, TouchableOpacity } from 'react-native'
+import { styles } from './PrimaryButton.styles'
 
 type PrimaryButtonProps = {
   children: ReactNode
@@ -21,35 +21,3 @@ export function PrimaryButton({ children, variant = 'primary', onPress, disabled
     </TouchableOpacity>
   )
 }
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  secondary: {
-    backgroundColor: colors.primarySoft,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  danger: {
-    backgroundColor: colors.dangerSoft,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  text: {
-    color: colors.deepGreen,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  dangerText: {
-    color: colors.danger,
-  },
-})

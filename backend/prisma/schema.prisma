@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum Statut {
+  draft
+  submitted
+  approved
+  rejected
+  paid
+}
+
+enum Categorie {
+  voiture
+  moto
+  train
+  bus
+  avion
+  hotel
+  repas
+  autre
+}
+
+model User {
+  id            String   @id @default(uuid())
+  nom           String
+  prenom        String
+  email         String   @unique
+  password_hash String
+  role          Role     @default(user)
+  created_at    DateTime @default(now())
+
+  expense_reports ExpenseReport[]
+  pdf_exports     PdfExport[]
+}
+
+model ExpenseReport {
+  id                String    @id @default(uuid())
+  user_id           String?
+  user              User?     @relation(fields: [user_id], references: [id])
+  demandeur_nom     String?
+  demandeur_prenom  String?
+  demandeur_email   String?
+  commission        String
+  objet_action      String
+  date_action       DateTime
+  ville_depart      String
+  ville_arrivee     String
+  montant_total     Decimal   @default(0)
+  statut            Statut    @default(draft)
+  compte_analytique String?
+  ligne_objectif    String?
+  piece_comptable   String?
+  commentaire       String?
+  submitted_at      DateTime?
+  paid_at           DateTime?
+  created_at        DateTime  @default(now())
+
+  expenses    Expense[]
+  pdf_exports PdfExport[]
+}
+
+model Expense {
+  id               String        @id @default(uuid())
+  report_id        String
+  report           ExpenseReport @relation(fields: [report_id], references: [id])
+  categorie        Categorie
+  description      String
+  montant          Decimal
+  montant_retenu   Decimal
+  justificatif_url String?
+  date_depense     DateTime
+  created_at       DateTime      @default(now())
+}
+
+model PdfExport {
+  id           String        @id @default(uuid())
+  report_id    String
+  report       ExpenseReport @relation(fields: [report_id], references: [id])
+  pdf_url      String
+  generated_at DateTime      @default(now())
+  generated_by String
+  user         User          @relation(fields: [generated_by], references: [id])
+}

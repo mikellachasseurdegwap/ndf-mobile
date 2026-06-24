@@ -44,8 +44,6 @@ type NewReportScreenProps = {
 
 const steps = ['Infos', 'Dépenses', 'Justificatifs', 'Récapitulatif']
 
-const commissions = ['EFS', 'CA', 'Commission technique', 'Commission canyon', 'Commission plongée', 'Autre']
-
 const categories: Array<{ value: ExpenseCategory; label: string }> = [
   { value: 'voiture', label: 'Voiture' },
   { value: 'moto', label: 'Moto' },
@@ -112,7 +110,7 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
   const [email, setEmail] = useState('')
   const [adresse, setAdresse] = useState('')
   const [telephone, setTelephone] = useState('')
-  const [commission, setCommission] = useState(commissions[0])
+  const [commission, setCommission] = useState('')
   const [objetAction, setObjetAction] = useState('')
   const [dateAction, setDateAction] = useState(toDateInputValue(new Date()))
   const [villeDepart, setVilleDepart] = useState('')
@@ -276,14 +274,7 @@ export function NewReportScreen({ token, onSubmitted }: NewReportScreenProps) {
           )}
           <TextInput placeholder="Adresse" value={adresse} onChangeText={setAdresse} placeholderTextColor={colors.mutedText} style={styles.input} />
           <TextInput placeholder="Téléphone" value={telephone} onChangeText={setTelephone} keyboardType="phone-pad" placeholderTextColor={colors.mutedText} style={styles.input} />
-          <Text style={styles.fieldLabel}>Commission</Text>
-          <View style={styles.chips}>
-            {commissions.map((item) => (
-              <TouchableOpacity key={item} style={[styles.chip, commission === item && styles.chipActive]} onPress={() => setCommission(item)}>
-                <Text style={[styles.chipText, commission === item && styles.chipTextActive]}>{item}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <TextInput placeholder="Commission" value={commission} onChangeText={setCommission} placeholderTextColor={colors.mutedText} style={styles.input} />
           <TextInput placeholder="Objet de l'action" value={objetAction} onChangeText={setObjetAction} placeholderTextColor={colors.mutedText} style={styles.input} />
           <DateButton label="Date de l'action" value={dateAction} onPress={() => setDatePickerTarget('date_action')} />
           <View style={styles.row}>

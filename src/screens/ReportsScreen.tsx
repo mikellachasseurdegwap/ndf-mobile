@@ -93,10 +93,19 @@ export function ReportsScreen({ token }: { token: string }) {
               {selectedId === report.id && (
                 <View style={styles.detailBox}>
                   <SectionTitle>Détail d'une NDF</SectionTitle>
+                  <InfoLine label="Référence" value={report.id} />
+                  <InfoLine label="Commission" value={report.commission} />
+                  <InfoLine label="Objet" value={report.objet_action} />
+                  <InfoLine label="Date action" value={new Date(report.date_action).toLocaleDateString('fr-FR')} />
+                  <InfoLine label="Trajet" value={`${report.ville_depart} -> ${report.ville_arrivee}`} />
+                  <InfoLine label="Montant total" value={`${Number(report.montant_total).toFixed(2)} €`} />
+                  <InfoLine label="Statut" value={statusLabels[report.statut]} />
+                  <View style={styles.separator} />
                   {report.expenses?.length ? report.expenses.map((expense) => (
                     <View key={expense.id} style={styles.expenseLine}>
                       <Text style={styles.expenseTitle}>{expense.description}</Text>
                       <Text style={styles.meta}>{expense.categorie} · {new Date(expense.date_depense).toLocaleDateString('fr-FR')}</Text>
+                      <Text style={styles.meta}>Montant déclaré : {Number(expense.montant).toFixed(2)} €</Text>
                       <Text style={styles.amountSmall}>{Number(expense.montant_retenu ?? expense.montant).toFixed(2)} €</Text>
                       <Text style={styles.meta}>Justificatifs : {countJustificatifs(expense.justificatif_url)}</Text>
                     </View>
@@ -122,6 +131,15 @@ function countJustificatifs(value?: string | null) {
   } catch {
     return 1
   }
+}
+
+function InfoLine({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.infoLine}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -257,6 +275,28 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     marginTop: spacing.md,
     paddingTop: spacing.md,
+  },
+  infoLine: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  infoLabel: {
+    color: colors.mutedText,
+    fontSize: 13,
+  },
+  infoValue: {
+    flex: 1,
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '800',
+    textAlign: 'right',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.md,
   },
   expenseLine: {
     backgroundColor: colors.background,

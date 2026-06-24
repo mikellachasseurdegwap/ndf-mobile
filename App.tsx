@@ -127,9 +127,7 @@ function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () =>
   return (
     <View style={styles.guestHome}>
       <View style={styles.guestCard}>
-        <Text style={styles.guestEyebrow}>Accès rapide</Text>
-        <Text style={styles.guestTitle}>Créer une note de frais</Text>
-        <Text style={styles.guestCopy}>Vous pouvez soumettre une note sans créer de compte. Le compte sert uniquement à suivre vos demandes.</Text>
+        <Text style={styles.guestTitle}>Bienvenue sur l'application de note de frais</Text>
         <TouchableOpacity style={styles.guestPrimary} onPress={onNewReportPress} activeOpacity={0.85}>
           <Text style={styles.guestPrimaryText}>Nouvelle NDF</Text>
         </TouchableOpacity>

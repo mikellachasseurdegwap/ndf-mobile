@@ -1,6 +1,40 @@
 import { AuthSession, ExpenseReport, MobileExpensePayload } from '../types'
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000'
+const REQUEST_TIMEOUT_MS = 15000
+
+function normalizeApiBaseUrl(value?: string) {
+  return value?.trim().replace(/\/+$/, '') || ''
+}
+
+const API_BASE_URL = normalizeApiBaseUrl(process.env.EXPO_PUBLIC_API_BASE_URL)
+
+function assertApiBaseUrl() {
+  if (!API_BASE_URL) {
+    throw new Error(
+      'Configuration API manquante: ajoute EXPO_PUBLIC_API_BASE_URL dans .env puis relance Expo avec --clear.'
+    )
+  }
+
+  if (/^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/i.test(API_BASE_URL)) {
+    throw new Error(
+      `URL API invalide pour un téléphone physique: ${API_BASE_URL}. Utilise l'adresse IP du Mac, par exemple http://10.26.135.24:3000.`
+    )
+  }
+
+  if (!/^https?:\/\//i.test(API_BASE_URL)) {
+    throw new Error(`URL API invalide: ${API_BASE_URL}. Elle doit commencer par http:// ou https://.`)
+  }
+}
+
+function describeNetworkFailure(error: unknown, url: string) {
+  const detail = error instanceof Error ? error.message : String(error)
+
+  if (API_BASE_URL.startsWith('http://')) {
+    return `Impossible de joindre le backend (${url}). Vérifie que le téléphone est sur le même Wi-Fi que le Mac, que le backend est lancé avec -H 0.0.0.0 et que EXPO_PUBLIC_API_BASE_URL pointe vers l'IP du Mac. Détail: ${detail}`
+  }
+
+  return `Impossible de joindre le backend (${url}). Vérifie l'URL, le certificat HTTPS et la connexion réseau. Détail: ${detail}`
+}
 
 type ApiResponse<T> = {
   success: boolean
@@ -9,8 +43,33 @@ type ApiResponse<T> = {
   message?: string
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit = {}) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  try {
+    console.log('[API REQUEST]', options.method || 'GET', url)
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+    console.log('[API RESPONSE]', response.status, url)
+    return response
+  } catch (error) {
+    console.log('[API NETWORK ERROR]', url, error)
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Délai dépassé: le backend ne répond pas après ${REQUEST_TIMEOUT_MS / 1000}s (${url}).`)
+    }
+    throw new Error(describeNetworkFailure(error, url))
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  assertApiBaseUrl()
+  const url = `${API_BASE_URL}${path}`
+  const response = await fetchWithTimeout(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -47,7 +106,9 @@ export function register(input: { nom: string; prenom: string; email: string; pa
 }
 
 export async function forgotPassword(email: string) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+  assertApiBaseUrl()
+  const url = `${API_BASE_URL}/api/auth/forgot-password`
+  const response = await fetchWithTimeout(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
@@ -108,10 +169,12 @@ export function generatePdf(reportId: string) {
 }
 
 export async function uploadJustificatif(file: { uri: string; name: string; type: string }) {
+  assertApiBaseUrl()
   const formData = new FormData()
   formData.append('file', file as unknown as Blob)
 
-  const response = await fetch(`${API_BASE_URL}/api/upload`, {
+  const url = `${API_BASE_URL}/api/upload`
+  const response = await fetchWithTimeout(url, {
     method: 'POST',
     body: formData,
   })

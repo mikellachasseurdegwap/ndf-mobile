@@ -8,6 +8,19 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "ios": {
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "permissions": [
+        "INTERNET"
+      ],
+      "usesCleartextTraffic": true
+    },
     "plugins": [
       "@react-native-community/datetimepicker"
     ]

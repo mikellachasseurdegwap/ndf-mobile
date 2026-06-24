@@ -1,26 +1,13 @@
 import { useState } from 'react'
-import { Image, SafeAreaView, StatusBar, Text, TouchableOpacity, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { AdminScreen } from './src/screens/AdminScreen'
-import { AuthScreen } from './src/screens/AuthScreen'
-import { ConfirmationScreen } from './src/screens/ConfirmationScreen'
-import { DashboardScreen } from './src/screens/DashboardScreen'
-import { NewReportScreen } from './src/screens/NewReportScreen'
-import { ProfileScreen } from './src/screens/ProfileScreen'
-import { ReportsScreen } from './src/screens/ReportsScreen'
+import { SafeAreaView, StatusBar, View } from 'react-native'
+import { AppHeader } from './src/components/layout/AppHeader'
+import { BottomTabBar } from './src/components/layout/BottomTabBar'
+import { GuestHome } from './src/features/home/GuestHome'
+import { TabKey } from './src/navigation/navigation.types'
+import { AdminScreen, AuthScreen, ConfirmationScreen, DashboardScreen, NewReportScreen, ProfileScreen, ReportsScreen } from './src/screens'
 import { colors } from './src/theme/theme'
 import { AuthSession, ExpenseReport } from './src/types'
 import { styles } from './App.styles'
-
-type TabKey = 'dashboard' | 'new' | 'reports' | 'admin' | 'profile' | 'confirmation'
-
-const tabs: Array<{ key: TabKey; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
-  { key: 'dashboard', label: 'Accueil', icon: 'home-outline' },
-  { key: 'new', label: 'NDF', icon: 'add-circle-outline' },
-  { key: 'reports', label: 'Suivi', icon: 'receipt-outline' },
-  { key: 'admin', label: 'Admin', icon: 'shield-checkmark-outline' },
-  { key: 'profile', label: 'Profil', icon: 'person-outline' },
-]
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('dashboard')
@@ -97,51 +84,11 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      <View style={styles.header}>
-        <Image source={require('./assets/ffs-logo.png')} style={styles.logo} resizeMode="contain" />
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Notes de Frais</Text>
-          <Text style={styles.subtitle}>Fédération Française de Spéléologie</Text>
-        </View>
-      </View>
+      <AppHeader />
 
       <View style={styles.content}>{renderScreen()}</View>
 
-      <View style={styles.tabBar}>
-        {tabs.map((tab) => {
-          if (!session && tab.key === 'reports') return null
-          if (tab.key === 'admin' && session?.user.role !== 'admin') return null
-            const isActive = activeTab === tab.key
-            return (
-              <TouchableOpacity key={tab.key} style={[styles.tabItem, isActive && styles.tabItemActive]} onPress={() => setActiveTab(tab.key)} activeOpacity={0.85}>
-                <Ionicons name={tab.icon} size={21} color={isActive ? colors.deepGreen : colors.mutedText} />
-                <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
-              </TouchableOpacity>
-            )
-        })}
-      </View>
+      <BottomTabBar activeTab={activeTab} user={session?.user ?? null} onTabPress={setActiveTab} />
     </SafeAreaView>
-  )
-}
-
-function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () => void; onLoginPress: () => void }) {
-  return (
-    <View style={styles.guestHome}>
-      <View style={styles.guestHero}>
-        <Text style={styles.guestTitle}>Bienvenue à la Fédération Française de Spéléologie</Text>
-        <Text style={styles.guestSubtitle}>Créer, envoyer et suivre vos notes depuis votre mobile.</Text>
-      </View>
-
-      <View style={styles.guestActions}>
-        <TouchableOpacity style={styles.guestPrimary} onPress={onNewReportPress} activeOpacity={0.85}>
-          <Ionicons name="add-circle-outline" size={20} color={colors.deepGreen} />
-          <Text style={styles.guestPrimaryText}>Nouvelle NDF</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.guestSecondary} onPress={onLoginPress} activeOpacity={0.85}>
-          <Ionicons name="person-outline" size={18} color={colors.deepGreen} />
-          <Text style={styles.guestSecondaryText}>Se connecter / créer un compte</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
   )
 }

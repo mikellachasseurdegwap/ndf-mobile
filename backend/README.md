@@ -1,68 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Backend mobile NDF
 
-## Getting Started
+Backend Next.js utilise uniquement comme API pour l'application mobile Expo.
 
-First, run the development server:
+Il ne contient plus les pages web du site. Les routes conservees servent a :
+
+- authentifier les utilisateurs mobiles ;
+- creer et lister les notes de frais mobiles ;
+- gerer l'espace admin mobile ;
+- uploader les justificatifs ;
+- generer les PDF ;
+- gerer la demande de mot de passe oublie.
+
+## Lancement
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+PATH=/opt/homebrew/opt/node@22/bin:$PATH npm run dev -- -H 0.0.0.0
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le `-H 0.0.0.0` est necessaire pour que le backend soit joignable depuis un vrai telephone sur le meme reseau.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes principales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-
-
-```
-
----
-
-## Tous les fichiers restants à créer dans `app/api/`
-
-Voici la structure complète avec l'ordre de création :
-```
-app/api/
-├── upload/
-│   └── route.ts          ✅ déjà fait
-├── expenses/
-│   ├── route.ts          ← 2e fichier
-│   └── [id]/
-│       └── route.ts      ← 3e fichier
-├── auth/
-│   ├── register/
-│   │   └── route.ts      ← 4e fichier
-│   └── login/
-│       └── route.ts      ← 5e fichier
-├── admin/
-│   └── expenses/
-│       ├── route.ts      ← 6e fichier
-│       └── [id]/
-│           └── route.ts  ← 7e fichier
-└── pdf/
-    └── [id]/
-        └── route.ts      ← 8e fichier
+- `POST /api/mobile/auth/login`
+- `POST /api/mobile/auth/register`
+- `GET /api/mobile/expenses`
+- `POST /api/mobile/expenses`
+- `GET /api/mobile/admin/expenses`
+- `PATCH /api/mobile/admin/expenses/[id]`
+- `POST /api/upload`
+- `GET /api/pdf/[id]`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`

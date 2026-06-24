@@ -19,8 +19,14 @@ export async function POST(req: NextRequest) {
     // Toujours répondre success pour ne pas révéler si l'email existe
     if (user) {
       const token = signResetToken(user.id, user.email)
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reinitialiser-mot-de-passe?token=${token}`
-      await sendEmailResetPassword(user.email, resetUrl)
+      const resetBaseUrl = process.env.PASSWORD_RESET_URL
+
+      if (resetBaseUrl) {
+        const resetUrl = `${resetBaseUrl}?token=${token}`
+        await sendEmailResetPassword(user.email, resetUrl)
+      } else {
+        console.warn('[FORGOT PASSWORD] PASSWORD_RESET_URL manquant, email non envoyé')
+      }
     }
 
     return NextResponse.json(

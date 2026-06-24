@@ -126,14 +126,45 @@ export default function App() {
 function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () => void; onLoginPress: () => void }) {
   return (
     <View style={styles.guestHome}>
-      <View style={styles.guestCard}>
+      <View style={styles.guestHero}>
+        <View style={styles.guestLogoBox}>
+          <Image source={require('./assets/ffs-logo.png')} style={styles.guestLogo} resizeMode="contain" />
+        </View>
+        <Text style={styles.guestBadge}>Application FFS / EFS</Text>
         <Text style={styles.guestTitle}>Bienvenue sur l'application de note de frais</Text>
+        <Text style={styles.guestSubtitle}>Créer, envoyer et suivre vos notes depuis votre mobile.</Text>
+      </View>
+
+      <View style={styles.guestActions}>
         <TouchableOpacity style={styles.guestPrimary} onPress={onNewReportPress} activeOpacity={0.85}>
+          <Ionicons name="add-circle-outline" size={20} color={colors.deepGreen} />
           <Text style={styles.guestPrimaryText}>Nouvelle NDF</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.guestSecondary} onPress={onLoginPress} activeOpacity={0.85}>
+          <Ionicons name="person-outline" size={18} color={colors.deepGreen} />
           <Text style={styles.guestSecondaryText}>Se connecter / créer un compte</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.guestFlow}>
+        <View style={styles.guestStep}>
+          <View style={styles.stepIcon}>
+            <Ionicons name="create-outline" size={18} color={colors.deepGreen} />
+          </View>
+          <Text style={styles.stepText}>Créer</Text>
+        </View>
+        <View style={styles.guestStep}>
+          <View style={styles.stepIcon}>
+            <Ionicons name="send-outline" size={18} color={colors.deepGreen} />
+          </View>
+          <Text style={styles.stepText}>Envoyer</Text>
+        </View>
+        <View style={styles.guestStep}>
+          <View style={styles.stepIcon}>
+            <Ionicons name="receipt-outline" size={18} color={colors.deepGreen} />
+          </View>
+          <Text style={styles.stepText}>Suivre</Text>
+        </View>
       </View>
     </View>
   )
@@ -210,53 +241,111 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: spacing.lg,
     justifyContent: 'center',
+    gap: spacing.lg,
   },
-  guestCard: {
+  guestHero: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.lg,
+    padding: spacing.xl,
+    alignItems: 'center',
   },
-  guestEyebrow: {
+  guestLogoBox: {
+    width: 112,
+    height: 88,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  guestLogo: {
+    width: 112,
+    height: 88,
+  },
+  guestBadge: {
     color: colors.green,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
-    letterSpacing: 0.8,
+    letterSpacing: 0.7,
     textTransform: 'uppercase',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    overflow: 'hidden',
   },
   guestTitle: {
     color: colors.text,
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '900',
-    marginTop: spacing.sm,
+    lineHeight: 25,
+    marginTop: spacing.md,
+    textAlign: 'center',
   },
-  guestCopy: {
+  guestSubtitle: {
     color: colors.mutedText,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 19,
     marginTop: spacing.sm,
-    marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
+  guestActions: {
+    gap: spacing.sm,
   },
   guestPrimary: {
+    flexDirection: 'row',
     backgroundColor: colors.primary,
     borderRadius: radius.md,
     padding: spacing.md,
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    justifyContent: 'center',
+    gap: spacing.sm,
   },
   guestPrimaryText: {
     color: colors.deepGreen,
     fontWeight: '900',
   },
   guestSecondary: {
-    backgroundColor: colors.primarySoft,
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: spacing.md,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   guestSecondaryText: {
     color: colors.deepGreen,
+    fontWeight: '800',
+  },
+  guestFlow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+  },
+  guestStep: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+  },
+  stepIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepText: {
+    color: colors.text,
+    fontSize: 12,
     fontWeight: '800',
   },
 })

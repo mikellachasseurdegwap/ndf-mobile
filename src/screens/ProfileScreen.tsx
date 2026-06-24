@@ -21,8 +21,6 @@ export function ProfileScreen({ user, onLogout }: ProfileScreenProps) {
         <Text style={styles.value}>{user.prenom} {user.nom}</Text>
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{user.email}</Text>
-        <Text style={styles.label}>Rôle</Text>
-        <Text style={styles.value}>{user.role}</Text>
       </View>
 
       <PrimaryButton variant="secondary" onPress={onLogout}>Déconnexion</PrimaryButton>

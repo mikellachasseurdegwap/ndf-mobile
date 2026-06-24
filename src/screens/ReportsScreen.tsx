@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Linking, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { SectionTitle } from '../components/SectionTitle'
-import { listReports } from '../services/api'
+import { generatePdf, listReports } from '../services/api'
 import { colors, radius, spacing } from '../theme/theme'
 import { ExpenseReport } from '../types'
 
@@ -16,7 +16,10 @@ const statusLabels: Record<ExpenseReport['statut'], string> = {
 
 export function ReportsScreen({ token }: { token: string }) {
   const [reports, setReports] = useState<ExpenseReport[]>([])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [pdfUrls, setPdfUrls] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
+  const [pdfLoading, setPdfLoading] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   async function loadReports() {
@@ -34,6 +37,20 @@ export function ReportsScreen({ token }: { token: string }) {
   useEffect(() => {
     loadReports()
   }, [])
+
+  async function handlePdf(reportId: string) {
+    setPdfLoading(reportId)
+    setError('')
+    try {
+      const data = await generatePdf(reportId)
+      setPdfUrls((current) => ({ ...current, [reportId]: data.pdf_url }))
+      await Linking.openURL(data.pdf_url)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur PDF')
+    } finally {
+      setPdfLoading(null)
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={loading} onRefresh={loadReports} />} showsVerticalScrollIndicator={false}>
@@ -59,18 +76,52 @@ export function ReportsScreen({ token }: { token: string }) {
                 </View>
                 <View style={styles.main}>
                   <Text style={styles.title}>{report.objet_action}</Text>
-                  <Text style={styles.meta}>{report.commission}</Text>
+                  <Text style={styles.meta}>{new Date(report.created_at).toLocaleDateString('fr-FR')} · {report.commission}</Text>
                   <Text style={styles.route}>{`${report.ville_depart} -> ${report.ville_arrivee}`}</Text>
                 </View>
                 <Text style={styles.amount}>{Number(report.montant_total).toFixed(2)} €</Text>
               </View>
               <Text style={styles.badge}>{statusLabels[report.statut]}</Text>
+              <View style={styles.actions}>
+                <TouchableOpacity style={styles.detailButton} onPress={() => setSelectedId(selectedId === report.id ? null : report.id)}>
+                  <Text style={styles.detailText}>{selectedId === report.id ? 'Masquer détail' : 'Voir détail'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.pdfButton} onPress={() => handlePdf(report.id)} disabled={pdfLoading === report.id}>
+                  <Text style={styles.pdfText}>{pdfLoading === report.id ? 'Génération...' : pdfUrls[report.id] ? 'Ouvrir PDF' : 'Télécharger PDF'}</Text>
+                </TouchableOpacity>
+              </View>
+              {selectedId === report.id && (
+                <View style={styles.detailBox}>
+                  <SectionTitle>Détail d'une NDF</SectionTitle>
+                  {report.expenses?.length ? report.expenses.map((expense) => (
+                    <View key={expense.id} style={styles.expenseLine}>
+                      <Text style={styles.expenseTitle}>{expense.description}</Text>
+                      <Text style={styles.meta}>{expense.categorie} · {new Date(expense.date_depense).toLocaleDateString('fr-FR')}</Text>
+                      <Text style={styles.amountSmall}>{Number(expense.montant_retenu ?? expense.montant).toFixed(2)} €</Text>
+                      <Text style={styles.meta}>Justificatifs : {countJustificatifs(expense.justificatif_url)}</Text>
+                    </View>
+                  )) : <Text style={styles.meta}>Aucune dépense détaillée reçue.</Text>}
+                  {report.statut === 'rejected' && report.commentaire_tresorier ? (
+                    <Text style={styles.rejected}>Commentaire trésorier : {report.commentaire_tresorier}</Text>
+                  ) : null}
+                </View>
+              )}
             </View>
           ))}
         </View>
       )}
     </ScrollView>
   )
+}
+
+function countJustificatifs(value?: string | null) {
+  if (!value) return 0
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? parsed.length : 1
+  } catch {
+    return 1
+  }
 }
 
 const styles = StyleSheet.create({
@@ -171,6 +222,65 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     marginTop: spacing.md,
     fontSize: 12,
+    fontWeight: '800',
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  detailButton: {
+    flex: 1,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  detailText: {
+    color: colors.deepGreen,
+    fontWeight: '900',
+  },
+  pdfButton: {
+    flex: 1,
+    borderRadius: radius.md,
+    backgroundColor: colors.primary,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  pdfText: {
+    color: colors.deepGreen,
+    fontWeight: '900',
+  },
+  detailBox: {
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+  },
+  expenseLine: {
+    backgroundColor: colors.background,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  expenseTitle: {
+    color: colors.text,
+    fontWeight: '900',
+    marginBottom: spacing.xs,
+  },
+  amountSmall: {
+    color: colors.deepGreen,
+    fontWeight: '900',
+    marginTop: spacing.xs,
+  },
+  rejected: {
+    color: colors.danger,
+    backgroundColor: colors.dangerSoft,
+    borderRadius: radius.sm,
+    padding: spacing.md,
     fontWeight: '800',
   },
 })

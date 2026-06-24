@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   },
   guestTitle: {
     color: colors.text,
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: '900',
     marginTop: spacing.sm,
   },

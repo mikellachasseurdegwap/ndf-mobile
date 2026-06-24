@@ -127,11 +127,8 @@ function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () =>
   return (
     <View style={styles.guestHome}>
       <View style={styles.guestHero}>
-        <View style={styles.guestLogoBox}>
-          <Image source={require('./assets/ffs-logo.png')} style={styles.guestLogo} resizeMode="contain" />
-        </View>
         <Text style={styles.guestBadge}>Application FFS / EFS</Text>
-        <Text style={styles.guestTitle}>Bienvenue sur l'application de note de frais</Text>
+        <Text style={styles.guestTitle}>Bienvenue sur la Fédération Française de Spéléologie</Text>
         <Text style={styles.guestSubtitle}>Créer, envoyer et suivre vos notes depuis votre mobile.</Text>
       </View>
 
@@ -144,27 +141,6 @@ function GuestHome({ onNewReportPress, onLoginPress }: { onNewReportPress: () =>
           <Ionicons name="person-outline" size={18} color={colors.deepGreen} />
           <Text style={styles.guestSecondaryText}>Se connecter / créer un compte</Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.guestFlow}>
-        <View style={styles.guestStep}>
-          <View style={styles.stepIcon}>
-            <Ionicons name="create-outline" size={18} color={colors.deepGreen} />
-          </View>
-          <Text style={styles.stepText}>Créer</Text>
-        </View>
-        <View style={styles.guestStep}>
-          <View style={styles.stepIcon}>
-            <Ionicons name="send-outline" size={18} color={colors.deepGreen} />
-          </View>
-          <Text style={styles.stepText}>Envoyer</Text>
-        </View>
-        <View style={styles.guestStep}>
-          <View style={styles.stepIcon}>
-            <Ionicons name="receipt-outline" size={18} color={colors.deepGreen} />
-          </View>
-          <Text style={styles.stepText}>Suivre</Text>
-        </View>
       </View>
     </View>
   )
@@ -251,17 +227,6 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     alignItems: 'center',
   },
-  guestLogoBox: {
-    width: 112,
-    height: 88,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-  },
-  guestLogo: {
-    width: 112,
-    height: 88,
-  },
   guestBadge: {
     color: colors.green,
     fontSize: 11,
@@ -318,34 +283,6 @@ const styles = StyleSheet.create({
   },
   guestSecondaryText: {
     color: colors.deepGreen,
-    fontWeight: '800',
-  },
-  guestFlow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  guestStep: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  stepIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  stepText: {
-    color: colors.text,
-    fontSize: 12,
     fontWeight: '800',
   },
 })
